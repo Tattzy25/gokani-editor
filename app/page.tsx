@@ -213,37 +213,60 @@ export default function Home() {
   }
 
   const handleGenerate = async () => {
-    if (isLoading) return // Prevent double clicks
-    
-    if (!prompt.trim()) {
-      toast.error("Please enter a prompt to generate an image")
-      return
-    }
+    if (isLoading) return
 
     setIsLoading(true)
     setIsGenerated(false)
     setGeneratedImages([])
 
-    const finalModelId = replicateModelId === "custom" ? customModelId : replicateModelId
+    try {
+      const response = await fetch("https://api.tattty.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          customer_id: "9191615529035",
+          version: "4e8f6c1dc77db77dabaf98318cde3679375a399b434ae2db0e698804ac84919c",
+          source_id: "9000",
+          numOutputs: numOutputs.toString(),
+          artist_uploads: "",
+        }),
+      })
 
-    const formData = new FormData()
-    formData.append("prompt", prompt)
-    formData.append("output_format", outputFormat)
-    formData.append("num_outputs", numOutputs.toString())
-    formData.append("output_quality", outputQuality.toString())
-    if (image) formData.append("image", image)
+      const result = await response.json()
 
+      if (!response.ok) {
+        const errorMessage = result?.error || result?.message || "Request failed"
+        toast.error(errorMessage)
+        return
+      }
 
-    const result = await generateImage(formData)
+      const outputs = Array.isArray(result)
+        ? result
+        : Array.isArray(result?.urls)
+          ? result.urls
+          : Array.isArray(result?.output)
+            ? result.output
+            : Array.isArray(result?.images)
+              ? result.images
+              : result?.url
+                ? [result.url]
+                : []
 
-    if (result.success) {
-      setGeneratedImages(Array.isArray(result.output) ? result.output : [result.output])
-      setIsGenerated(true)
-    } else {
-      console.error(result.error)
-      toast.error(result.error || "Failed to generate image. Please try again.")
+      if (outputs.length > 0) {
+        setGeneratedImages(outputs)
+        setIsGenerated(true)
+      } else {
+        toast.error(result?.error || result?.message || "No images returned")
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to generate image")
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   const handleDownload = async (url: string, index: number) => {
@@ -378,7 +401,7 @@ export default function Home() {
       <div className="container mx-auto py-10 px-[10px] space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Card 1: Prompt & Model Settings */}
-        <Card className="shadow-[0px_0px_7px_3px_rgba(28,156,240,0.8)] h-full">
+        <Card className="h-full">
           <CardContent className="space-y-4 flex-1 pt-[5px]">
             <div className="space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -432,6 +455,8 @@ export default function Home() {
               <Button
                 className="h-auto p-[3px]"
                 style={{ fontFamily: "var(--font-rock-salt)", fontSize: "24px" }}
+                onClick={handleGenerate}
+                disabled={isLoading}
               >
                 Generate Now
               </Button>
@@ -440,7 +465,7 @@ export default function Home() {
         </Card>
 
         {/* Card 4: Image Uploads */}
-        <Card className="shadow-[0px_0px_7px_3px_rgba(28,156,240,0.8)] h-full">
+        <Card className="h-full">
           <CardContent className="space-y-4 flex-1">
             <div className="flex flex-col items-center pb-12">
               {isLoading ? (
