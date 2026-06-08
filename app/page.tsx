@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +13,8 @@ import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import { toast } from "sonner"
 import { AVAILABLE_MODELS } from "@/lib/models"
+import { EDITOR_MODELS, findEditorModel } from "@/lib/editor-models"
+import { ModelInfo } from "@/components/model-info"
 import {
   Dialog,
   DialogContent,
@@ -82,10 +84,10 @@ function ImageUploadInput({
     setIsDragging(false)
     const file = e.dataTransfer.files?.[0]
     if (file) {
-      if (file.type.startsWith('image/')) {
+      if (["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
         handleFile(file)
       } else {
-        toast.error("Please upload a valid image file (JPG, PNG, GIF)")
+        toast.error("Please upload a valid file (PNG, JPG, JPEG, WEBP)")
       }
     }
   }
@@ -93,7 +95,11 @@ function ImageUploadInput({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      handleFile(file)
+      if (["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+        handleFile(file)
+      } else {
+        toast.error("Please upload a valid file (PNG, JPG, JPEG, WEBP)")
+      }
     }
   }
   
@@ -149,7 +155,7 @@ function ImageUploadInput({
               <span className="font-semibold text-foreground">Click to upload</span> or drag and drop
             </div>
             <div className="text-xs text-muted-foreground">
-              SVG, PNG, JPG or GIF
+              PNG, JPG, JPEG or WEBP
             </div>
           </div>
         </div>
@@ -159,7 +165,7 @@ function ImageUploadInput({
         type="file"
         ref={fileInputRef}
         className="hidden"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/webp"
         onChange={handleFileChange}
       />
     </div>
@@ -182,6 +188,9 @@ export default function Home() {
   const [shareFile, setShareFile] = useState<File | null>(null)
   const [shareUrl, setShareUrl] = useState("")
   const [isPreparingShare, setIsPreparingShare] = useState(false)
+
+  // Card 3 editor model selection
+  const [editorModel, setEditorModel] = useState(EDITOR_MODELS[0].id)
 
   // Form State
   const [replicateModelId, setReplicateModelId] = useState(AVAILABLE_MODELS[0].id)
@@ -244,23 +253,13 @@ export default function Home() {
         return
       }
 
-      const outputs = Array.isArray(result)
-        ? result
-        : Array.isArray(result?.urls)
-          ? result.urls
-          : Array.isArray(result?.output)
-            ? result.output
-            : Array.isArray(result?.images)
-              ? result.images
-              : result?.url
-                ? [result.url]
-                : []
+      const outputs = Array.isArray(result?.urls) ? result.urls : []
 
       if (outputs.length > 0) {
         setGeneratedImages(outputs)
         setIsGenerated(true)
       } else {
-        toast.error(result?.error || result?.message || "No images returned")
+        toast.error(result?.error || result?.message || "No images returned from API")
       }
     } catch (error: any) {
       toast.error(error?.message || "Failed to generate image")
@@ -398,8 +397,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="container mx-auto py-10 px-[10px] space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="w-full py-10 px-[5px] space-y-8">
+        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-2 gap-6 items-start">
         {/* Card 1: Prompt & Model Settings */}
         <Card className="h-full">
           <CardContent className="space-y-4 flex-1 pt-[5px]">
@@ -431,7 +431,7 @@ export default function Home() {
                 value={[numOutputs]}
                 onValueChange={(vals: number[]) => setNumOutputs(vals[0])}
                 min={1}
-                max={4}
+                max={10}
                 step={1}
               />
             </div>
@@ -449,20 +449,49 @@ export default function Home() {
               }}
             />
 
-            <div aria-hidden="true" style={{ height: "20px" }} />
-
-            <div className="flex justify-center">
-              <Button
-                className="h-auto p-[3px]"
-                style={{ fontFamily: "var(--font-rock-salt)", fontSize: "24px" }}
-                onClick={handleGenerate}
-                disabled={isLoading}
-              >
-                Generate Now
-              </Button>
-            </div>
           </CardContent>
+          <CardFooter className="justify-center">
+            <Button
+              className="h-auto p-[3px]"
+              style={{ fontFamily: "var(--font-rock-salt)", fontSize: "24px" }}
+              onClick={handleGenerate}
+              disabled={isLoading}
+            >
+              Generate Now
+            </Button>
+          </CardFooter>
         </Card>
+
+        {/* Card 3: Prompt & Model Settings (duplicate) */}
+        <Card className="h-full gap-0 py-0">
+          <CardHeader className="h-10 p-[5px] flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              {EDITOR_MODELS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setEditorModel(m.id)}
+                  className={cn(
+                    "rounded-full border px-4 py-1 text-sm font-medium transition-colors",
+                    editorModel === m.id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-accent"
+                  )}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 overflow-y-auto p-[5px] max-h-[600px]">
+            {(() => {
+              const active = findEditorModel(editorModel)
+              return active ? <ModelInfo model={active} /> : null
+            })()}
+          </CardContent>
+          <CardFooter className="h-10 p-[5px]" />
+        </Card>
+        </div>
 
         {/* Card 4: Image Uploads */}
         <Card className="h-full">
@@ -481,11 +510,11 @@ export default function Home() {
                       Download All ({generatedImages.length})
                     </Button>
                   )}
-                  <div className="flex flex-wrap justify-center items-center gap-8">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-6 w-full">
                     {generatedImages.map((src, i) => (
                       <div key={i} className="flex flex-col gap-2">
                         <div
-                          className="relative rounded-lg flex items-center justify-center w-full max-w-md shadow-sm cursor-pointer transition-colors"
+                          className="relative rounded-lg flex items-center justify-center w-full shadow-sm cursor-pointer transition-colors"
                           style={getAspectRatioStyle(aspectRatio)}
                           onClick={() => {
                             setLightboxIndex(i)
@@ -498,7 +527,7 @@ export default function Home() {
                             className="w-full h-full object-cover rounded-lg"
                           />
                         </div>
-                        <div className="flex gap-2 w-full max-w-md">
+                        <div className="flex gap-2 w-full">
                           <Button
                             variant="outline"
                             size="sm"
