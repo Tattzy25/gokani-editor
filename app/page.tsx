@@ -12,9 +12,6 @@ import { Info, Loader2, Download, Upload, Sparkles, Share2 } from "lucide-react"
 import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import { toast } from "sonner"
-import { AVAILABLE_MODELS } from "@/lib/models"
-import { EDITOR_MODELS, findEditorModel } from "@/lib/editor-models"
-import { ModelInfo } from "@/components/model-info"
 import {
   Dialog,
   DialogContent,
@@ -189,12 +186,7 @@ export default function Home() {
   const [shareUrl, setShareUrl] = useState("")
   const [isPreparingShare, setIsPreparingShare] = useState(false)
 
-  // Card 3 editor model selection
-  const [editorModel, setEditorModel] = useState(EDITOR_MODELS[0].id)
-
   // Form State
-  const [replicateModelId, setReplicateModelId] = useState(AVAILABLE_MODELS[0].id)
-  const [customModelId, setCustomModelId] = useState("")
   const [prompt, setPrompt] = useState("")
   const [model, setModel] = useState("dev")
   const [outputFormat, setOutputFormat] = useState("webp")
@@ -399,7 +391,7 @@ export default function Home() {
     <div className="flex flex-col w-full">
       <div className="w-full py-10 px-[5px] space-y-8">
         <div className="flex flex-col gap-6">
-        <div className="grid grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 gap-6 items-start">
         {/* Card 1: Prompt & Model Settings */}
         <Card className="h-full">
           <CardContent className="space-y-4 flex-1 pt-[5px]">
@@ -462,35 +454,6 @@ export default function Home() {
           </CardFooter>
         </Card>
 
-        {/* Card 3: Prompt & Model Settings (duplicate) */}
-        <Card className="h-full gap-0 py-0">
-          <CardHeader className="h-10 p-[5px] flex items-center justify-center">
-            <div className="flex items-center gap-3">
-              {EDITOR_MODELS.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => setEditorModel(m.id)}
-                  className={cn(
-                    "rounded-full border px-4 py-1 text-sm font-medium transition-colors",
-                    editorModel === m.id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-accent"
-                  )}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-[5px] max-h-[600px]">
-            {(() => {
-              const active = findEditorModel(editorModel)
-              return active ? <ModelInfo model={active} /> : null
-            })()}
-          </CardContent>
-          <CardFooter className="h-10 p-[5px]" />
-        </Card>
         </div>
 
         {/* Card 4: Image Uploads */}
