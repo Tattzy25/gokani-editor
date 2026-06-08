@@ -8,7 +8,8 @@
 export type EditorModelId =
   | "openai/gpt-image-2"
   | "seedream-5-lite"
-  | "flux-2-max";
+  | "flux-2-max"
+  | "flux-2-pro";
 
 export type ModelSection = {
   heading: string;
@@ -228,6 +229,57 @@ export const EDITOR_MODELS: EditorModel[] = [
           {
             term: "Rapid Production Velocity",
             text: "Despite massive breakthroughs in structural detail and editing precision, the engine runs at accelerated speeds, generating premium content up to three times faster than competing models of equivalent quality.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "flux-2-pro",
+    label: "Flux 2 Pro",
+    title: "Flux 2 Pro",
+    description:
+      "Flux 2 Pro is a production-grade image generation and editing powerhouse from Black Forest Labs. Built for high-volume commercial scaling, it effortlessly balances hyper-realistic detail, advanced typography, and multi-image continuity.",
+    sections: [
+      {
+        heading: "High-Volume Creative Capabilities",
+        items: [
+          {
+            term: "Advanced Typography Integration:",
+            text: "Perfectly renders complex graphic typography, structured information graphics, and crisp application interface mockups directly onto your canvas with production-level stability.",
+          },
+          {
+            term: "Studio Photorealism:",
+            text: "Delivers razor-sharp textures, authentic environmental illumination, and flawless material physics—perfect for professional product showcases, architectural concepts, and high-end commercial imagery.",
+          },
+          {
+            term: "Multi-Image Continuity:",
+            text: "Upload up to 8 reference images at once to completely lock down a specific individual, product line, or cohesive aesthetic theme across a sequence of completely different scenes.",
+          },
+          {
+            term: "Exact Brand Color Matching:",
+            text: "Inherent support for literal hex codes, allowing you to instantly map and enforce exact brand colors, specific apparel tones, or corporate palettes with total accuracy.",
+          },
+        ],
+      },
+      {
+        heading: "Performance & Delivery Specs",
+        items: [
+          {
+            term: "High-Resolution Editing:",
+            text: "Modifies and scales existing graphics at resolutions up to 4 megapixels while maintaining structural cohesion and micro-details.",
+          },
+          {
+            term: "Multi-Reference Blending:",
+            text: "Seamlessly references specific elements across multiple uploaded files to pull a background from one image and a subject from another into a single, flawless output.",
+          },
+          {
+            term: "Production Velocity:",
+            text: "Optimized as a highly reliable, stable enterprise backbone engineered to deliver heavy generation workloads at high speeds.",
+          },
+          {
+            term: "Premium Exports:",
+            text: "Delivers crisp, high-fidelity files completely cleared and ready for top-tier marketplaces or direct website publishing.",
           },
         ],
       },
