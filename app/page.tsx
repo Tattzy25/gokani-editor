@@ -380,6 +380,20 @@ export default function Home() {
     }
   }
 
+  const handleShareAll = async () => {
+    try {
+      await navigator.share({
+        title: 'GoKAnI AI Generation',
+        text: 'Check out this image I generated with GoKAnI AI!',
+        url: generatedImages[0],
+      })
+    } catch (error: any) {
+      if (error?.name !== 'AbortError') {
+        toast.error("Sharing failed.")
+      }
+    }
+  }
+
   const { w, h } = getDimensions()
   const slides = generatedImages.map((src) => ({
     src,
@@ -456,9 +470,34 @@ export default function Home() {
 
         </div>
 
+        {!isLoading && generatedImages.length > 0 && (
+          <div className="flex md:hidden justify-center gap-3 py-[10px] -my-6">
+            <Button onClick={handleDownloadAll} variant="secondary" className="rounded-full">
+              <Download className="mr-2 h-4 w-4" />
+              Download
+            </Button>
+            <Button onClick={handleShareAll} variant="secondary" className="rounded-full">
+              <Share2 className="mr-2 h-4 w-4" />
+              Share
+            </Button>
+          </div>
+        )}
+
         {/* Card 4: Image Uploads */}
         <Card className="h-full py-2">
-          <CardContent className="space-y-4 flex-1 px-2">
+          <CardContent className="flex-1 px-2">
+            {!isLoading && generatedImages.length > 0 && (
+              <div className="hidden md:flex justify-center gap-3 pb-[10px]">
+                <Button onClick={handleDownloadAll} variant="secondary" className="rounded-full">
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </Button>
+                <Button onClick={handleShareAll} variant="secondary" className="rounded-full">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+            )}
             <div className="flex flex-col items-center pb-0">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center space-y-4 py-12">
@@ -467,12 +506,6 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  {generatedImages.length > 1 && (
-                    <Button onClick={handleDownloadAll} variant="secondary" className="mb-8">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download All ({generatedImages.length})
-                    </Button>
-                  )}
                   <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
                     {generatedImages.map((src, i) => (
                       <div
