@@ -263,7 +263,7 @@ export default function Home() {
   const handleDownload = async (url: string, index: number) => {
     try {
       const filename = `generated-image-${index + 1}.${outputFormat}`
-      const response = await fetch(`/api/download?url=${encodeURIComponent(url)}&filename=${filename}`)
+      const response = await fetch(url)
       if (!response.ok) throw new Error('Network response was not ok')
       
       const blob = await response.blob()
@@ -277,8 +277,7 @@ export default function Home() {
       window.URL.revokeObjectURL(blobUrl)
       toast.success("Image downloaded successfully")
     } catch (error) {
-      console.error('Download failed:', error)
-      toast.error("Download failed. Please try again.")
+      console.error(error)
     }
   }
 
