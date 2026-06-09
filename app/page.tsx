@@ -196,8 +196,6 @@ export default function Home() {
 
   const [image, setImage] = useState("")
   const [imageFileName, setImageFileName] = useState("")
-  const [mask, setMask] = useState("")
-  const [maskFileName, setMaskFileName] = useState("")
 
   const [promptStrength, setPromptStrength] = useState(0.8)
 
@@ -455,19 +453,9 @@ export default function Home() {
               }}
             />
 
-            <ImageUploadInput
-              id="image_url_2"
-              label="Image 2 (Optional)"
-              tooltip="Optional second input image."
-              value={mask}
-              onChange={(val, name) => {
-                setMask(val)
-                if (name) setMaskFileName(name)
-              }}
-            />
 
           </CardContent>
-          <CardFooter className="justify-center">
+          <CardFooter className="justify-center pb-[20px]">
             <Button
               className="h-auto p-[3px]"
               style={{ fontFamily: "var(--font-rock-salt)", fontSize: "24px" }}
