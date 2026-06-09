@@ -412,6 +412,9 @@ export default function Home() {
   const { w, h } = getDimensions()
   const slides = generatedImages.map((src) => ({ src, width: w, height: h }))
 
+  const hardcodedFallbackImageUrl =
+    "https://cdn.shopify.com/s/files/1/0649/4155/5787/files/TATTTY.png?v=1780441127"
+
   const pageImageUrl =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("image_url") ||
@@ -419,7 +422,7 @@ export default function Home() {
         ""
       : ""
 
-  const placeholderImageUrl = pageImageUrl || image || ""
+  const placeholderImageUrl = pageImageUrl || image || hardcodedFallbackImageUrl
 
   return (
     <div className="flex flex-col w-full">
@@ -478,8 +481,7 @@ export default function Home() {
 
               <CardFooter className="justify-center pb-[20px]">
                 <Button
-                  className="h-auto p-[3px]"
-                  style={{ fontFamily: "var(--font-rock-salt)", fontSize: "24px" }}
+                  className="h-auto p-[3px] text-2xl"
                   onClick={handleGenerate}
                   disabled={isLoading}
                 >
@@ -542,7 +544,13 @@ export default function Home() {
                         <img
                           src={placeholderImageUrl}
                           alt="Placeholder"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain object-center"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement
+                            if (target.src !== hardcodedFallbackImageUrl) {
+                              target.src = hardcodedFallbackImageUrl
+                            }
+                          }}
                         />
                       </div>
                     </div>

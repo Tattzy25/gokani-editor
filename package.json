@@ -1,5 +1,5 @@
 {
-  "name": "famosofluxo",
+  "name": "image-editor",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -46,7 +46,7 @@
     "input-otp": "^1.4.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.561.0",
-    "next": "16.0.10",
+    "next": "16.2.7",
     "next-themes": "^0.4.6",
     "react": "19.2.1",
     "react-day-picker": "^9.12.0",
