@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef } from "react"
@@ -398,15 +399,16 @@ export default function Home() {
     width: w,
     height: h,
   }))
+  const placeholderImageUrl = "https://cdn.shopify.com/s/files/1/0649/4155/5787/files/TATTTY.png?v=1780441127"
 
   return (
     <div className="flex flex-col w-full">
       <div className="w-full py-10 px-[5px] space-y-8">
-        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
-        <div className="grid grid-cols-1 gap-6 items-start">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-stretch">
+        <div className="grid grid-cols-1 gap-6 items-start h-full">
         {/* Card 1: Prompt & Model Settings */}
-        <Card className="h-full pb-[5px]">
-          <CardContent className="space-y-4 flex-1 pt-[5px]">
+        <Card className="h-full pb-[5px] flex flex-col">
+          <CardContent className="space-y-4 flex-1 pt-[5px] flex flex-col">
             <div className="space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <LabelWithTooltip 
@@ -483,8 +485,8 @@ export default function Home() {
         )}
 
         {/* Card 4: Image Uploads */}
-        <Card className="h-full py-2">
-          <CardContent className="flex-1 px-2">
+        <Card className="h-full py-2 flex flex-col">
+          <CardContent className="flex-1 px-2 flex flex-col">
             {!isLoading && generatedImages.length > 0 && (
               <div className="hidden md:flex justify-center gap-3 pb-[10px]">
                 <Button onClick={handleDownloadAll} variant="secondary" className="rounded-full">
@@ -497,34 +499,56 @@ export default function Home() {
                 </Button>
               </div>
             )}
-            <div className="flex flex-col items-center pb-0">
+            <div className="flex flex-col items-center pb-0 w-full">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center space-y-4 py-12">
                   <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
                   <p className="text-muted-foreground">Creating your masterpiece...</p>
                 </div>
               ) : (
-                <>
-                  <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1 max-w-[420px] mx-auto" : "grid-cols-2")}>
-                    {generatedImages.map((src, i) => (
-                      <div
-                        key={i}
-                        className="relative rounded-lg overflow-hidden shadow-sm cursor-pointer"
-                        style={getAspectRatioStyle(aspectRatio)}
-                        onClick={() => {
-                          setLightboxIndex(i)
-                          setLightboxOpen(true)
-                        }}
-                      >
-                        <img
-                          src={src}
-                          alt={`Generated image ${i + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                <div className="relative w-full">
+                  <div
+                    className={cn(
+                      "transition-opacity duration-500 ease-in-out",
+                      generatedImages.length > 0 ? "opacity-0 pointer-events-none absolute inset-0" : "opacity-100"
+                    )}
+                  >
+                    <div className="relative rounded-lg overflow-hidden shadow-sm w-full" style={getAspectRatioStyle(aspectRatio)}>
+                      <img
+                        src={placeholderImageUrl}
+                        alt="Placeholder"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
-                </>
+
+                  <div
+                    className={cn(
+                      "transition-opacity duration-500 ease-in-out",
+                      generatedImages.length > 0 ? "opacity-100" : "opacity-0 pointer-events-none absolute inset-0"
+                    )}
+                  >
+                    <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1 max-w-[420px] mx-auto" : "grid-cols-2")}>
+                      {generatedImages.map((src, i) => (
+                        <div
+                          key={i}
+                          className="relative rounded-lg overflow-hidden shadow-sm cursor-pointer"
+                          style={getAspectRatioStyle(aspectRatio)}
+                          onClick={() => {
+                            setLightboxIndex(i)
+                            setLightboxOpen(true)
+                          }}
+                        >
+                          <img
+                            src={src}
+                            alt={`Generated image ${i + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </CardContent>
