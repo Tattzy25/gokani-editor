@@ -229,8 +229,8 @@ export default function Home() {
         },
         body: JSON.stringify({
           prompt,
-          customer_id: "9191615529035",
-          version: "4e8f6c1dc77db77dabaf98318cde3679375a399b434ae2db0e698804ac84919c",
+          customer_id: "",
+          version: "",
           source_id: "9000",
           numOutputs: numOutputs.toString(),
           artist_uploads: "",
@@ -382,8 +382,8 @@ export default function Home() {
   const handleShareAll = async () => {
     try {
       await navigator.share({
-        title: 'GoKAnI AI Generation',
-        text: 'Check out this image I generated with GoKAnI AI!',
+        title: 'TaTTTy',
+        text: 'Yooo check out this sickk tattoo i generated on TaTTTy!',
         url: generatedImages[0],
       })
     } catch (error: any) {
@@ -399,7 +399,9 @@ export default function Home() {
     width: w,
     height: h,
   }))
-  const placeholderImageUrl = "https://cdn.shopify.com/s/files/1/0649/4155/5787/files/TATTTY.png?v=1780441127"
+  const placeholderImageUrl =
+    JSON.parse(product?.metafields?.custom?.image_url?.value || "[]")?.[0] ||
+    "";
 
   return (
     <div className="flex flex-col w-full">
