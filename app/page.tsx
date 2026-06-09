@@ -3,12 +3,12 @@
 import { useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Info, Loader2, Download, Upload, Sparkles, Share2 } from "lucide-react"
+import { Info, Loader2, Download, Upload, Share2 } from "lucide-react"
 import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import { toast } from "sonner"
@@ -423,7 +423,7 @@ export default function Home() {
                 value={[numOutputs]}
                 onValueChange={(vals: number[]) => setNumOutputs(vals[0])}
                 min={1}
-                max={10}
+                max={4}
                 step={1}
               />
             </div>
@@ -457,9 +457,9 @@ export default function Home() {
         </div>
 
         {/* Card 4: Image Uploads */}
-        <Card className="h-full">
-          <CardContent className="space-y-4 flex-1">
-            <div className="flex flex-col items-center pb-12">
+        <Card className="h-full py-2">
+          <CardContent className="space-y-4 flex-1 px-2">
+            <div className="flex flex-col items-center pb-0">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center space-y-4 py-12">
                   <Loader2 className="h-12 w-12 animate-spin text-muted-foreground" />
@@ -473,43 +473,22 @@ export default function Home() {
                       Download All ({generatedImages.length})
                     </Button>
                   )}
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-6 w-full">
+                  <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
                     {generatedImages.map((src, i) => (
-                      <div key={i} className="flex flex-col gap-2">
-                        <div
-                          className="relative rounded-lg flex items-center justify-center w-full shadow-sm cursor-pointer transition-colors"
-                          style={getAspectRatioStyle(aspectRatio)}
-                          onClick={() => {
-                            setLightboxIndex(i)
-                            setLightboxOpen(true)
-                          }}
-                        >
-                          <img
-                            src={src}
-                            alt={`Generated image ${i + 1}`}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        </div>
-                        <div className="flex gap-2 w-full">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                            onClick={() => handleDownload(src, i)}
-                          >
-                            <Download className="mr-2 h-4 w-4" />
-                            Download
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                            onClick={() => handleShare(src, i)}
-                          >
-                            <Share2 className="mr-2 h-4 w-4" />
-                            Share
-                          </Button>
-                        </div>
+                      <div
+                        key={i}
+                        className="relative rounded-lg overflow-hidden shadow-sm cursor-pointer"
+                        style={getAspectRatioStyle(aspectRatio)}
+                        onClick={() => {
+                          setLightboxIndex(i)
+                          setLightboxOpen(true)
+                        }}
+                      >
+                        <img
+                          src={src}
+                          alt={`Generated image ${i + 1}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>
