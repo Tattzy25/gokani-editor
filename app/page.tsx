@@ -159,6 +159,7 @@ function ImageUploadInput({
       )}
       
       <input
+        id={id}
         type="file"
         ref={fileInputRef}
         className="hidden"
@@ -403,10 +404,10 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <div className="w-full py-10 px-[5px] space-y-8">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:items-start">
         <div className="grid grid-cols-1 gap-6 items-start">
         {/* Card 1: Prompt & Model Settings */}
-        <Card className="h-full">
+        <Card className="h-full pb-[5px]">
           <CardContent className="space-y-4 flex-1 pt-[5px]">
             <div className="space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -445,12 +446,23 @@ export default function Home() {
 
             <ImageUploadInput
               id="image_url"
-              label="Image (Img2Img)"
+              label="Image 1 (Img2Img)"
               tooltip="Input image for image to image or inpainting mode. If provided, aspect_ratio, width, and height inputs are ignored."
               value={image}
               onChange={(val, name) => {
                 setImage(val)
                 if (name) setImageFileName(name)
+              }}
+            />
+
+            <ImageUploadInput
+              id="image_url_2"
+              label="Image 2 (Optional)"
+              tooltip="Optional second input image."
+              value={mask}
+              onChange={(val, name) => {
+                setMask(val)
+                if (name) setMaskFileName(name)
               }}
             />
 
@@ -505,7 +517,7 @@ export default function Home() {
                 </div>
               ) : (
                 <>
-                  <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
+                  <div className={cn("grid gap-2 w-full", generatedImages.length === 1 ? "grid-cols-1 max-w-[420px] mx-auto" : "grid-cols-2")}>
                     {generatedImages.map((src, i) => (
                       <div
                         key={i}
