@@ -399,9 +399,14 @@ export default function Home() {
     width: w,
     height: h,
   }))
-  const placeholderImageUrl =
-    JSON.parse(product?.metafields?.custom?.image_url?.value || "[]")?.[0] ||
-    "";
+  const pageImageUrl =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("image_url") ||
+        new URLSearchParams(window.location.search).get("cover_image_url") ||
+        ""
+      : ""
+
+  const placeholderImageUrl = pageImageUrl || image || ""
 
   return (
     <div className="flex flex-col w-full">
